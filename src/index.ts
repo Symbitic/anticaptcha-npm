@@ -1,3 +1,4 @@
+// Only until TypeScript is merged upstream.
 import axios from "axios";
 
 export interface AntiCaptchaPayload {
@@ -102,7 +103,7 @@ export async function solveRecaptchaV2ProxyOn(
   websiteKey: string,
   proxyType: string,
   proxyAddress: string,
-  proxyPort: number,
+  proxyPort: number | string,
   proxyLogin: string,
   proxyPassword: string,
   userAgent: string,
@@ -182,7 +183,7 @@ export async function solveRecaptchaV2EnterpriseProxyOn(
   enterprisePayload: AntiCaptchaPayload,
   proxyType: string,
   proxyAddress: string,
-  proxyPort: number,
+  proxyPort: number | string,
   proxyLogin: string,
   proxyPassword: string,
   userAgent: string,
@@ -271,7 +272,7 @@ export async function solveHCaptchaProxyOn(
   websiteKey: string,
   proxyType: string,
   proxyAddress: string,
-  proxyPort: number,
+  proxyPort: number | string,
   proxyLogin: string,
   proxyPassword: string,
   userAgent: string,
@@ -281,6 +282,59 @@ export async function solveHCaptchaProxyOn(
     clientKey: settings.clientKey,
     task: {
       type: "HCaptchaTask",
+      websiteURL: websiteURL,
+      websiteKey: websiteKey,
+      proxyType: proxyType,
+      proxyAddress: proxyAddress,
+      proxyPort: proxyPort,
+      proxyLogin: proxyLogin,
+      proxyPassword: proxyPassword,
+      userAgent: userAgent,
+      cookies: cookies,
+    },
+  });
+  settings.taskId = res.taskId;
+  const solution = await waitForResult(res.taskId);
+  if (solution.cookies) {
+    settings.cookies = solution.cookies;
+  }
+
+  return solution.gRecaptchaResponse;
+}
+
+
+export async function solveNoCaptchaProxyless(
+  websiteURL: string,
+  websiteKey: string
+) {
+  const res = await JSONRequest("createTask", {
+    clientKey: settings.clientKey,
+    task: {
+      type: "NoCaptchaTaskProxyless",
+      websiteURL: websiteURL,
+      websiteKey: websiteKey,
+    },
+  });
+  settings.taskId = res.taskId;
+  const solution = await waitForResult(res.taskId);
+  return solution.gRecaptchaResponse;
+}
+
+export async function solveNoCaptchaProxyOn(
+  websiteURL: string,
+  websiteKey: string,
+  proxyType: string,
+  proxyAddress: string,
+  proxyPort: number | string,
+  proxyLogin: string,
+  proxyPassword: string,
+  userAgent: string,
+  cookies: any
+) {
+  const res = await JSONRequest("createTask", {
+    clientKey: settings.clientKey,
+    task: {
+      type: "NoCaptchaTask",
       websiteURL: websiteURL,
       websiteKey: websiteKey,
       proxyType: proxyType,
@@ -333,7 +387,7 @@ export async function solveFunCaptchaProxyOn(
   websiteKey: string,
   proxyType: string,
   proxyAddress: string,
-  proxyPort: number,
+  proxyPort: number | string,
   proxyLogin: string,
   proxyPassword: string,
   userAgent: string,
@@ -395,7 +449,7 @@ export async function solveGeeTestProxyOn(
   getLib: any,
   proxyType: string,
   proxyAddress: string,
-  proxyPort: number,
+  proxyPort: number | string,
   proxyLogin: string,
   proxyPassword: string,
   userAgent: string,
@@ -459,6 +513,7 @@ export async function waitForResult(taskId: number) {
     await delay(settings.normalWaitingInterval * 1000);
   }
 }
+
 export async function JSONRequest(methodName: string, data: any) {
   const res = await axios.post(
     `https://api.anti-captcha.com/${methodName}`,
@@ -518,6 +573,8 @@ export default {
   reportCorrectRecaptcha,
   solveHCaptchaProxyless,
   solveHCaptchaProxyOn,
+  solveNoCaptchaProxyless,
+  solveNoCaptchaProxyOn,
   solveFunCaptchaProxyless,
   solveFunCaptchaProxyOn,
   solveGeeTestProxyless,
