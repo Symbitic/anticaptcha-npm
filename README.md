@@ -2,13 +2,28 @@
 
 Official anti-captcha.com npm package for solving images with text, Recaptcha v2/v3, Funcaptcha and GeeTest.
 
-[Anti-captcha](http://anti-captcha.com) is an oldest and cheapest web service dedicated to solving captchas by human workers from around the world. By solving captchas with us you help people in poorest regions of the world to earn money, which not only cover their basic needs, but also gives them ability to financially help their families, study and avoid jobs where they're simply not happy.
+[Anti-captcha](http://anti-captcha.com) is the oldest and cheapest web service dedicated to solving captchas by human workers from around the world. By solving captchas with us you help people in poorest regions of the world earn money, which not only covers their basic needs but also gives them the ability to financially help their families, study, and avoid jobs where they're simply not happy.
 
-To use the service you need to [register](http://anti-captcha.com/clients/) and topup your balance. Prices start from $0.0005 per image captcha and $0.002 for Recaptcha. That's $0.5 per 1000 for images and $2 for 1000 Recaptchas.
+To use the service you need to [register](http://anti-captcha.com/clients/) and add funds to your balance. Prices start from $0.0005 per image captcha and $0.002 for Recaptcha. That's $0.5 per 1000 for images and $2 for 1000 Recaptchas.
 
 Module installation:
 ```bash
 npm -i @antiadmin/anticaptchaofficial
+```
+
+ES6 and CommonJS modules are supported:
+```javascript
+import anticaptcha from '@antiadmin/anticaptchaofficial';
+
+const anticaptcha = require("@antiadmin/anticaptchaofficial");
+```
+
+TypeScript support is included:
+```javascript
+import anticaptcha, { AntiCaptchaPayload } from '@antiadmin/anticaptchaofficial';
+
+const payload: AntiCaptchaPayload = { "s": "TOKEN", "param": "string" };
+anticaptcha.solveRecaptchaV2EnterpriseProxyless('DOMAIN', 'KEY', payload);
 ```
 
 Import and check your balance:
@@ -63,7 +78,6 @@ Report last solved image captcha as incorrect (must read [this](https://anticapt
 ac.reportIncorrectImageCaptcha();
 ```
 
-
 Solve Recaptcha V2 with proxy:
 ```javascript
 ac.solveRecaptchaV2ProxyOn('http://DOMAIN.COM',
@@ -101,9 +115,9 @@ Solve Recaptcha V2 Enterprise without proxy:
 ac.solveRecaptchaV2EnterpriseProxyless(
     'http://DOMAIN.COM', 
     'WEBSITE_KEY', 
-    { 
+    {
         "s" : "SOME_TOKEN",
-        "custom_parameter" : "string_number_boolean" 
+        "custom_parameter" : "string_number_boolean"
     })
     .then(gresponse => {
         console.log('g-response: '+gresponse);
